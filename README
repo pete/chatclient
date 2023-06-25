@@ -1,0 +1,99 @@
+This is a sloppy, small, hacked-together client for the Pleroma shoutbox.  I
+wrote it because I was a bit frustrated while working on something else and
+had the idea in the back of my head that maybe a Go client would be nice, so I
+could use the Shoutbox from Plan 9 and then other people could use it from
+Linux/BSD/whatever.  It has one dependency outside the stdlib:
+golang.org/x/net/websocket .
+
+To build:
+
+	mk
+
+To build if you are not on Plan 9 and you don't have mk from either P9P
+or Inferno:
+
+	go mod download golang.org/x/net
+	go build -o chatclient chatclient.go
+
+(I'm not providing binaries.  Don't run random binaries from the internet.)
+
+To use:
+
+	user=$pleroma_username pass=$pleroma_password ./chatclient $domain
+	# For example:
+	user=p pass=noodles ./chatclient freespeechextremist.com
+
+You might want to do what I do, which is to wrap that in a script that reads the
+auth data from a file (one that is chmod'd 600) so I don't have to type in a
+password.  If you are degugging, you can set "degug=1" in the environment also.
+
+If it breaks, you know how to find me.  If your instance doesn't have a
+shoutbox, I feel bad for you.¹ You should have installed Pleroma.  Also this is
+just a dopey small thing, don't take it seriously.
+
+Recommended accompanying software for cool guys:
+	• Plan 9's mothra browser, created by living legend Tom Duff.
+	• bloat², created by @r@freesoftwareextremist.com, which not
+	  only works great in mothra, but which compiles and runs
+	  fine on Plan 9.  This allows you to just use mothra to
+	  do normal fedi activities.
+	• irc7 to complete the experience.
+	• Take it easy.
+
+Recommended accompanying software for POSIX plebs:
+	• Still use bloat².
+	• Just install rlwrap instead of ever sending a patch that puts
+	  line-editing into a program.  Seriously, you don't need to do
+	  that and it breaks elsewhere.  Like the stupid `redis-cli`,
+	  where they rolled their own line-editing?  Hitting ^J doesn't
+	  do a newline.  0xa is literally the newline character.  It's unusable
+	  in a normal vt100 emulator and `redis-cli` absolutely *hates* running
+	  outside one of those.  I wrote a Redis client for Inferno partially to
+	  get around the stupid problem of having to use some LD_PRELOAD wrapper
+	  to always return 0 for isatty().  (It is more fun to write an
+	  LD_PRELOAD wrapper than it is to use any software that depends on one
+	  of those.)
+	• I don't know, maybe you could make a Tk wrapper and it would be
+	  usable.³
+	• I didn't even test this in Linux but it probably works.
+	• Just install Plan 9.
+
+Recommended accompanying software for Windows users:
+	• Linux
+	• Scratch that, just install Plan 9.
+	• winmodem.dll
+	• Stuxnet
+	• LHX Attack Chopper (1990) for MS-DOS.
+	• WinCleaner Memory Optimizer
+	• Microsoft Excel Saga
+	• A trojan remote access tool embedded in a Minecraft mod.
+
+While we're here, I'd like to just say that I hate working with JSON in Go. You
+should look at the stuff Honk⁴ has to do for this.  This took, like, two hours
+to write, and that was 90 minutes longer than it should have; it was about half
+an hour a couple of weeks ago looking at the websocket stuff Pleroma does and
+then about an hour arguing with a compiler about `interface{}` and the program
+just (by design) crashes if it gets something unexpected so it really should
+be way easier.  (Maybe I should have just used tedu's library.) On the other
+hand, rolling my own websockets library seemed like a really hairy yak to shave
+just to have a minimal client to support a minimal quadi-joke feature in
+Pleroma, so that is a nice part about Go. "Stream of JSON tokens" was pleasantly
+eay to work with, but that was overshadowed by the obtuse hoops you have to jump
+through to make your program make sense of the JSON.  Every time I have to touch
+JSON in Go, I feel this way and I will probably feel this way forever, or until
+Google decidese to finally fluoridate the compiler so badly that the fish start
+dying and the crops fail and I go back to just writing C forever.
+
+Thank you for reading my blog post.
+
+-----------
+
+¹ Shoutboxes not planned for Revolver.  lol.  lmao.
+
+² https://git.freesoftwareextremist.com/bloat . My patches are at
+https://git.freespeechextremist.com/gitweb/?p=bloat . Webb's got
+a fork: https://git.sr.ht/~webb/8bloat .
+
+³ Maybe I'll do this.
+
+⁴ https://humungus.tedunangst.com/r/webs/v/tip/f/junk/junk.go
