@@ -23,6 +23,7 @@ type MsgTxt struct {
 }
 
 var degug bool
+var m *log.Logger
 
 func main() {
 	degug = os.Getenv("degug") != ""
@@ -74,6 +75,8 @@ func main() {
 			}
 		}
 	}()
+
+	m = log.New(os.Stdout, log.Prefix(), log.Flags())
 
 	go inputloop(ws, c)
 
@@ -169,7 +172,7 @@ func printmsg(user string, msg map[string]interface{}) {
 		log.Printf("Misunderstood this message:  %#v", msg)
 		return
 	}
-	log.Printf("[%s]:  %s", user, text)
+	m.Printf("[%s]:  %s", user, text)
 }
 
 func idmfg(i int) chan int {
